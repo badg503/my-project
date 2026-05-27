@@ -1,0 +1,87 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3307/lab_management?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  security:
+    user:
+      name: admin
+      password: 123456
+
+jwt:
+  secret: lab_management_system_secret_key_2024
+  expiration: 10800000  # 3 小时（10800000 毫秒）
+  header: Authorization
+  prefix: Bearer
+
+# Redis 配置（已注释，生产环境时启用）
+# spring:
+#   data:
+#     redis:
+#       host: localhost
+#       port: 6379
+#       password:
+#       database: 0
+#       timeout: 5000ms
+#       lettuce:
+#         pool:
+#           max-active: 8
+#           max-idle: 8
+#           min-idle: 2
+#           max-wait: 3000ms
+#   cache:
+#     type: redis
+#     redis:
+#       time-to-live: 1800000  # 30 分钟（毫秒）
+#       cache-null-values: false
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.lab.entity
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+ai:
+  enabled: true
+  base-url: http://localhost:5000
+  qa-endpoint: /ai/qa
+  fault-predict-endpoint: /ai/fault-predict
+  safety-detect-endpoint: /ai/safety-detect
+  schedule-endpoint: /ai/schedule
+  analysis-endpoint: /ai/analysis
+  timeout-ms: 10000
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+# 邮箱配置（找回密码功能）
+spring.mail:
+  host: smtp.qq.com           # QQ 邮箱：smtp.qq.com | 163 邮箱：smtp.163.com
+  port: 587                   # TLS 端口：587 | SSL 端口：465
+  username: 1436581562@qq.com # TODO: 替换为你的邮箱账号
+  password: hlqhjbiaeiblibjf   # TODO: 替换为你的邮箱授权码（不是登录密码！）
+  properties:
+    mail:
+      smtp:
+        auth: true
+        starttls:
+          enable: true
+          required: true
+
+# 设备电源检测配置
+device:
+  power:
+    check:
+      threshold: 0.1    # 电流阈值（安培），>0.1A 视为未关闭
+      minutes: 5        # 查询最近 N 分钟内的传感器读数

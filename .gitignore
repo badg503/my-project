@@ -1,0 +1,46 @@
+# JVM 内存转储和诊断文件（超大文件）
+*.dmp
+*.phd
+*.trc
+javacore.*.txt
+Snap.*.trc
+heapdump.*.phd
+core.*.dmp
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Maven
+lab-backend/.mvn/repository/
+lab-backend/target/
+target/
+*.class
+
+# AI 模型文件（太大，建议用 Git LFS 或单独存储）
+AI-project/finetuned_model/
+AI-project/yolov8s.pt
+yolov8s.pt
+*.pt
+
+# 数据库备份
+backups/
+lab-backend/backups/
+
+# 数据缓存
+data/captures/
+AI-project/data/captures/
+
+# 日志
+*.log
+
+# Node.js
+node_modules/
+dist/
+.nuxt/

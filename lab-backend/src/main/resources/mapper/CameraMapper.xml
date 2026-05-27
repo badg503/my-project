@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lab.mapper.CameraMapper">
+    
+    <!-- 摄像头管理 -->
+    
+    <select id="selectAll" resultType="com.lab.entity.Camera">
+        SELECT * FROM lab_camera
+        <where>
+            <if test="enabled != null">
+                AND enabled = #{enabled}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="selectByLabId" resultType="com.lab.entity.Camera">
+        SELECT * FROM lab_camera
+        <where>
+            lab_id = #{labId}
+            <if test="enabled != null">
+                AND enabled = #{enabled}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="selectByCode" resultType="com.lab.entity.Camera">
+        SELECT * FROM lab_camera WHERE camera_code = #{cameraCode}
+    </select>
+    
+    <insert id="insert" parameterType="com.lab.entity.Camera">
+        INSERT INTO lab_camera (
+            camera_code, camera_name, camera_type, camera_url,
+            lab_id, location, description, danger_classes,
+            alert_threshold, confidence, enabled, status,
+            snapshot_enabled, snapshot_interval, alert_cooldown, extra_config
+        ) VALUES (
+            #{cameraCode}, #{cameraName}, #{cameraType}, #{cameraUrl},
+            #{labId}, #{location}, #{description}, #{dangerClasses},
+            #{alertThreshold}, #{confidence}, #{enabled}, #{status},
+            #{snapshotEnabled}, #{snapshotInterval}, #{alertCooldown}, #{extraConfig}
+        )
+    </insert>
+    
+    <update id="update" parameterType="com.lab.entity.Camera">
+        UPDATE lab_camera
+        <set>
+            <if test="cameraName != null">camera_name = #{cameraName},</if>
+            <if test="cameraType != null">camera_type = #{cameraType},</if>
+            <if test="cameraUrl != null">camera_url = #{cameraUrl},</if>
+            <if test="labId != null">lab_id = #{labId},</if>
+            <if test="location != null">location = #{location},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="dangerClasses != null">danger_classes = #{dangerClasses},</if>
+            <if test="alertThreshold != null">alert_threshold = #{alertThreshold},</if>
+            <if test="confidence != null">confidence = #{confidence},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="snapshotEnabled != null">snapshot_enabled = #{snapshotEnabled},</if>
+            <if test="snapshotInterval != null">snapshot_interval = #{snapshotInterval},</if>
+            <if test="alertCooldown != null">alert_cooldown = #{alertCooldown},</if>
+            <if test="extraConfig != null">extra_config = #{extraConfig},</if>
+        </set>
+        WHERE camera_code = #{cameraCode}
+    </update>
+    
+    <delete id="deleteByCode">
+        DELETE FROM lab_camera WHERE camera_code = #{cameraCode}
+    </delete>
+    
+    <update id="updateStatus">
+        UPDATE lab_camera 
+        SET status = #{status}, last_check_time = NOW() 
+        WHERE camera_code = #{cameraCode}
+    </update>
+    
+    <!-- 检测记录 -->
+    
+    <insert id="insertLog" parameterType="com.lab.entity.CameraLog">
+        INSERT INTO lab_camera_log (
+            camera_id, detect_objects, danger_objects,
+            safety_score, has_alert, alert_level, alert_message,
+            snapshot_path
+        ) VALUES (
+            #{cameraId}, #{detectObjects}, #{dangerObjects},
+            #{safetyScore}, #{hasAlert}, #{alertLevel}, #{alertMessage},
+            #{snapshotPath}
+        )
+    </insert>
+    
+    <select id="selectLogs" resultType="java.util.Map">
+        SELECT l.*, c.camera_name, c.location 
+        FROM lab_camera_log l
+        JOIN lab_camera c ON l.camera_id = c.id
+        <where>
+            <if test="cameraCode != null">
+                AND c.camera_code = #{cameraCode}
+            </if>
+            <if test="startTime != null">
+                AND l.detect_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND l.detect_time &lt;= #{endTime}
+            </if>
+            <if test="hasAlert != null">
+                AND l.has_alert = #{hasAlert}
+            </if>
+        </where>
+        ORDER BY l.detect_time DESC
+        LIMIT 100
+    </select>
+    
+    <update id="updateLogProcessed">
+        UPDATE lab_camera_log
+        SET processed = #{processed},
+            process_user_id = #{processUserId},
+            process_time = NOW(),
+            process_remark = #{processRemark}
+        WHERE id = #{id}
+    </update>
+    
+</mapper>

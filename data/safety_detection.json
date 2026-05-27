@@ -1,0 +1,12 @@
+{
+  "detect_items": [],
+  "safety_analysis": {
+    "total_objects": 0,
+    "danger_objects": [],
+    "safety_score": 100,
+    "recommendations": [
+      "未发现明显安全隐患。"
+    ]
+  },
+  "timestamp": "2026-03-16T22:07:23.186891"
+}
